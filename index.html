@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Petualangan Matematika – Pembulatan & Kejujuran</title>
+<style>
+:root{--b:#2f6bff;--c:#14c7e0;--y:#ffd23f;--g:#1fa862;--p:#8b5cf6;--o:#ff7a2f;--ink:#1f2a44;--bg:#eef6ff}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;color:var(--ink);background:linear-gradient(160deg,#e3f4ff,#f3ebff 55%,#fff6dc);min-height:100vh;font-size:18px;line-height:1.55}
+header{background:linear-gradient(90deg,var(--b),var(--p));color:#fff;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;position:sticky;top:0;z-index:5;box-shadow:0 3px 12px #0003}
+header b{font-size:1.05rem}header small{font-size:.9rem;font-weight:700;background:#ffffff30;padding:3px 10px;border-radius:99px}
+#prog{max-width:760px;margin:10px auto 0;padding:0 12px}
+#chips{display:flex;gap:6px;overflow-x:auto;padding:4px 2px}
+.chip{flex:0 0 auto;font-size:.8rem;font-weight:700;padding:5px 10px;border-radius:99px;background:#fff;border:2px solid #d5def0;white-space:nowrap}
+.chip.done{background:#dcf8e8;border-color:var(--g)}.chip.act{background:var(--y);border-color:var(--o);animation:pulse 1.6s infinite}.chip.lock{opacity:.6}
+.chip b{margin-left:4px}
+.barw{height:14px;background:#fff;border-radius:99px;margin-top:6px;overflow:hidden;border:2px solid #d5def0}
+#bar{height:100%;width:0;background:linear-gradient(90deg,var(--c),var(--g));transition:width .6s}
+#pct{font-size:.8rem;font-weight:700;text-align:right}
+main{max-width:760px;margin:12px auto 40px;padding:0 12px}
+.card{background:#fff;border-radius:26px;padding:20px 18px;box-shadow:0 8px 24px #2f6bff22;margin-bottom:14px}
+.pop{animation:pop .45s ease}
+@keyframes pop{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes pulse{50%{transform:scale(1.06)}}
+@keyframes bob{50%{transform:translateY(-10px)}}
+@keyframes slide{from{opacity:0;transform:translateX(-18px)}to{opacity:1;transform:none}}
+.center{text-align:center}
+.hero{text-align:center;background:linear-gradient(180deg,#fff,#f0f8ff)}
+.hero h1{font-size:1.55rem;margin:6px 0;color:var(--b)}.sub{font-size:1.1rem;font-weight:700;color:var(--p)}
+.emo{font-size:2rem;animation:bob 2s infinite}.kid{font-size:4rem;animation:bob 2.4s infinite}
+input{width:100%;font-size:1.2rem;padding:14px;border-radius:16px;border:3px solid var(--c);margin:8px 0;font-family:inherit}
+.err{color:#c2410c;font-weight:700;min-height:26px}
+.btn{display:block;width:100%;min-height:58px;margin:12px 0 0;font-size:1.15rem;font-weight:800;font-family:inherit;color:#fff;background:linear-gradient(90deg,var(--b),var(--p));border:0;border-radius:18px;box-shadow:0 5px 0 #1b3fa8;cursor:pointer}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 #1b3fa8}
+.btn.alt{background:linear-gradient(90deg,var(--o),#ffb02f);box-shadow:0 5px 0 #b9560f}
+.btn.ghost{background:#eaf0ff;color:var(--b);box-shadow:0 4px 0 #c2d0f5}
+.row{display:flex;gap:10px}.row .btn{flex:1}
+.tag{display:inline-block;background:var(--y);color:#6b4a00;font-weight:800;font-size:.85rem;padding:4px 12px;border-radius:99px;margin-bottom:8px}
+h2{font-size:1.3rem;margin:10px 0}
+.story{background:#fff8dc;border-left:6px solid var(--y);padding:10px 12px;border-radius:12px;margin:8px 0;font-weight:600}
+.big{font-size:2.3rem;font-weight:900;text-align:center;color:var(--b);padding:8px 0}
+.hl{background:var(--y);color:#7a3d00;border-radius:10px;padding:0 8px;animation:pulse 1.4s infinite;display:inline-block}
+.arrow{display:inline-block;animation:slide 1.2s infinite alternate}
+.vis{background:#eaf6ff;border-radius:18px;margin:8px 0}
+.stps{display:flex;gap:5px;flex-wrap:wrap;margin:4px 0}
+.stp{font-size:.78rem;font-weight:800;padding:3px 9px;border-radius:99px;background:#eee}
+.stp.ok{background:#dcf8e8;color:#116b3d}.stp.on{background:var(--y)}.stp.lk{color:#777}
+.opt{display:block;width:100%;text-align:left;min-height:56px;margin:9px 0;padding:12px 16px;font-size:1.1rem;font-weight:700;font-family:inherit;background:#f4f8ff;border:3px solid #c8d8ff;border-radius:16px;cursor:pointer;color:var(--ink)}
+.opt:hover:not(:disabled){border-color:var(--b);background:#e6eeff}
+.opt.good{background:#dcf8e8;border-color:var(--g)}.opt.bad{background:#fff0d9;border-color:var(--o)}
+.opt:disabled{cursor:default}
+.fb{border-radius:16px;padding:12px 14px;margin-top:10px;animation:pop .4s}
+.fb.good{background:#e4faee;border:3px solid var(--g)}.fb.bad{background:#fff3df;border:3px solid var(--o)}
+.fb p{margin:6px 0}
+.ex ol{padding-left:22px}.ex li{margin:6px 0;animation:slide .5s both}.ex li:nth-child(2){animation-delay:.2s}.ex li:nth-child(3){animation-delay:.4s}.ex li:nth-child(4){animation-delay:.6s}
+.res{font-size:1.5rem;font-weight:900;text-align:center;background:#dcf8e8;border-radius:14px;padding:8px;color:#116b3d}
+.digits{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:10px 0}
+.dg{text-align:center;border-radius:12px;padding:8px 0;font-weight:900;font-size:1.3rem;color:#fff}
+.dg small{display:block;font-size:.7rem}.dn{background:var(--b)}.du{background:var(--o)}
+.badge{background:linear-gradient(135deg,#fff3b0,#ffd23f);border-radius:18px;padding:12px;margin:10px 0;font-size:1.1rem;animation:bob 1.6s infinite}
+details{background:#f0f6ff;border-radius:12px;padding:8px 12px;margin:8px 0}summary{font-weight:800;cursor:pointer}
+.stat{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}.stat div{background:#f0f6ff;border-radius:14px;padding:10px;font-weight:800;text-align:center}
+.cf{position:fixed;top:-40px;animation:fall 2.6s linear forwards;z-index:60;pointer-events:none}
+@keyframes fall{to{transform:translateY(112vh) rotate(360deg)}}
+#toast{position:fixed;top:70px;left:50%;transform:translateX(-50%);background:var(--g);color:#fff;font-weight:800;padding:12px 20px;border-radius:99px;z-index:70;box-shadow:0 6px 18px #0004;animation:pop .4s}
+.modal{position:fixed;inset:0;background:#0007;display:flex;align-items:center;justify-content:center;padding:16px;z-index:80}
+.modal .card{max-width:420px;width:100%;text-align:center}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+@media(min-width:600px){.big{font-size:3rem}}
+.ic{width:1.15em;height:1.15em;vertical-align:-.2em;display:inline-block;flex:0 0 auto}.ic.xl{width:84px;height:84px;display:block;margin:6px auto;animation:bob 2s infinite}.scene{display:flex;justify-content:center;align-items:flex-end;gap:10px;margin-top:6px}.scene .ic{width:62px;height:62px;animation:bob 2.4s infinite}.scene .ic.k{width:120px;height:120px}.scene.s2 .ic{width:46px;height:46px;animation-delay:.4s}.chip .ic,header .ic{width:1.3em;height:1.3em}.badge .ic{width:44px;height:44px}.stp .ic{width:1em;height:1em}.illu{width:100%;max-width:400px;display:block;margin:8px auto}.hero{background:radial-gradient(circle at 50% 28%,#d3f1ff,#fff 72%)}.scene .ic.k{width:150px;height:150px}.scene .ic{filter:drop-shadow(0 6px 6px #0002)}.fbk{width:60px;height:60px;float:left;margin:0 10px 4px 0}.fb{overflow:hidden}.scene.s2 .ic{width:56px;height:56px}.mu{background:#ffffff30;border:0;color:#fff;font-weight:800;font-family:inherit;border-radius:99px;padding:4px 12px;font-size:.9rem;cursor:pointer;min-height:34px}.mu:active{transform:scale(.95)}</style>
+</head>
+<body><svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="i-kidh" viewBox="0 0 64 64"><path d="M14 52C5 44 5 33 9 24M50 52c9-8 9-19 5-28" stroke="#ffd9b0" stroke-width="7" stroke-linecap="round" fill="none"/><path d="M10 64c0-14 9-20 22-20s22 6 22 20z" fill="#2f6bff"/><circle cx="32" cy="26" r="15" fill="#ffd9b0" stroke="#d99a5b" stroke-width="2.5"/><path d="M16 25c0-13 9-18 16-18s16 5 16 18c-4-7-10-9-16-9s-12 2-16 9z" fill="#3b2a20"/><circle cx="26" cy="28" r="2.3" fill="#3b2a20"/><circle cx="38" cy="28" r="2.3" fill="#3b2a20"/><circle cx="22" cy="33" r="3" fill="#ffb3b3"/><circle cx="42" cy="33" r="3" fill="#ffb3b3"/><path d="M25 34q7 10 14 0z" fill="#c2415a"/><path d="M4 10l2 4 4 1-4 2-1 4-2-4-4-1 4-2zM58 8l2 4 4 1-4 2-1 4-2-4-4-1 4-2z" fill="#ffd23f"/></symbol><symbol id="i-kidt" viewBox="0 0 64 64"><path d="M10 64c0-14 9-20 22-20s22 6 22 20z" fill="#2f6bff"/><circle cx="32" cy="26" r="15" fill="#ffd9b0" stroke="#d99a5b" stroke-width="2.5"/><path d="M16 25c0-13 9-18 16-18s16 5 16 18c-4-7-10-9-16-9s-12 2-16 9z" fill="#3b2a20"/><circle cx="26" cy="28" r="2.3" fill="#3b2a20"/><circle cx="38" cy="28" r="2.3" fill="#3b2a20"/><circle cx="22" cy="33" r="3" fill="#ffb3b3"/><circle cx="42" cy="33" r="3" fill="#ffb3b3"/><circle cx="32" cy="37" r="3" fill="#c2415a"/><path d="M21 21l9 3M43 21l-9 3" stroke="#3b2a20" stroke-width="2.5" stroke-linecap="round"/><text x="47" y="14" font-size="17" font-weight="900" fill="#ff7a2f">?</text></symbol><symbol id="i-sack" viewBox="0 0 64 64"><path d="M20 20l-3-10h30l-3 10" fill="#d9bd78" stroke="#b9954a" stroke-width="3" stroke-linejoin="round"/><path d="M16 22c6-5 26-5 32 0l7 28c1 7-8 11-23 11S8 57 9 50z" fill="#f6e8c0" stroke="#b9954a" stroke-width="3" stroke-linejoin="round"/><rect x="21" y="32" width="22" height="15" rx="4" fill="#fff" stroke="#b9954a" stroke-width="2"/><path d="M26 40h12M29 36l3 8 3-8" stroke="#2f6bff" stroke-width="2.5" fill="none" stroke-linecap="round"/></symbol><symbol id="i-orange" viewBox="0 0 64 64"><circle cx="32" cy="36" r="22" fill="#ff9f1c" stroke="#c2410c" stroke-width="3"/><path d="M32 14c0-6 6-9 12-8-1 6-6 9-12 8z" fill="#1fa862" stroke="#116b3d" stroke-width="2.5" stroke-linejoin="round"/><path d="M20 30c2-5 6-7 10-7" stroke="#fff" stroke-width="3.5" stroke-linecap="round" fill="none" opacity=".8"/></symbol><symbol id="i-melon" viewBox="0 0 64 64"><path d="M4 26a28 28 0 0056 0z" fill="#1fa862" stroke="#116b3d" stroke-width="3" stroke-linejoin="round"/><path d="M9 26a23 23 0 0046 0z" fill="#ff5d6c"/><path d="M4 26h56" stroke="#116b3d" stroke-width="3"/><g fill="#2b1b17"><ellipse cx="22" cy="34" rx="1.8" ry="3"/><ellipse cx="32" cy="38" rx="1.8" ry="3"/><ellipse cx="42" cy="34" rx="1.8" ry="3"/></g></symbol><symbol id="i-spk" viewBox="0 0 64 64"><path d="M8 24h12l14-12v40L20 40H8z" fill="#fff"/><path d="M42 22c5 6 5 14 0 20M49 15c9 10 9 24 0 34" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round"/></symbol><symbol id="i-mute" viewBox="0 0 64 64"><path d="M8 24h12l14-12v40L20 40H8z" fill="#fff"/><path d="M44 24l14 16M58 24L44 40" stroke="#ffd23f" stroke-width="5" stroke-linecap="round"/></symbol><symbol id="i-star" viewBox="0 0 64 64"><path d="M32 4l8.4 17.6 19.2 2.6-14 13.3 3.6 19.1L32 47.4 14.8 56.6l3.6-19.1-14-13.3 19.2-2.6z" fill="#ffd23f" stroke="#f59e0b" stroke-width="3" stroke-linejoin="round"/><path d="M26 20l3-6" stroke="#fff" stroke-width="3" stroke-linecap="round"/></symbol><symbol id="i-ruler" viewBox="0 0 64 64"><rect x="3" y="20" width="58" height="24" rx="5" fill="#ffd23f" stroke="#e59a00" stroke-width="3"/><path d="M13 20v10M21 20v6M29 20v10M37 20v6M45 20v10M53 20v6" stroke="#7a4a00" stroke-width="2.6" stroke-linecap="round"/></symbol><symbol id="i-scale" viewBox="0 0 64 64"><path d="M32 10v42M18 55h28M10 20h44" stroke="#6d4bd8" stroke-width="5" stroke-linecap="round"/><path d="M10 20L2 38h16zM54 20l-8 18h16z" fill="#14c7e0" stroke="#0e8fa3" stroke-width="2.5" stroke-linejoin="round"/><circle cx="32" cy="9" r="5" fill="#ffd23f" stroke="#e59a00" stroke-width="2.5"/></symbol><symbol id="i-rocket" viewBox="0 0 64 64"><path d="M20 30L8 44l12-2zM44 30l12 14-12-2z" fill="#ff7a2f" stroke="#c2410c" stroke-width="2.5" stroke-linejoin="round"/><path d="M32 4c10 8 14 20 12 34H20C18 24 22 12 32 4z" fill="#fff" stroke="#2f6bff" stroke-width="3" stroke-linejoin="round"/><circle cx="32" cy="22" r="6" fill="#14c7e0" stroke="#2f6bff" stroke-width="3"/><path d="M26 42h12l-6 16z" fill="#ffd23f" stroke="#e59a00" stroke-width="2.5" stroke-linejoin="round"/></symbol><symbol id="i-trophy" viewBox="0 0 64 64"><path d="M18 12H8c0 12 4 16 11 17M46 12h10c0 12-4 16-11 17" fill="none" stroke="#e59a00" stroke-width="3" stroke-linecap="round"/><path d="M18 6h28v18c0 9-6 15-14 15S18 33 18 24z" fill="#ffd23f" stroke="#e59a00" stroke-width="3" stroke-linejoin="round"/><path d="M32 39v10M25 49h14v7H25zM21 58h22" fill="#ff9f1c" stroke="#e59a00" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/><path d="M24 12v10" stroke="#fff" stroke-width="3" stroke-linecap="round"/></symbol><symbol id="i-book" viewBox="0 0 64 64"><path d="M6 12c10-3 20-2 26 4v38c-6-6-16-7-26-4zM58 12c-10-3-20-2-26 4v38c6-6 16-7 26-4z" fill="#8b5cf6" stroke="#5b34c4" stroke-width="3" stroke-linejoin="round"/><path d="M13 22c5-1 10 0 14 3M13 31c5-1 10 0 14 3M51 22c-5-1-10 0-14 3M51 31c-5-1-10 0-14 3" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none"/></symbol><symbol id="i-pencil" viewBox="0 0 64 64"><path d="M10 54l4-14L42 12l10 10-28 28z" fill="#ffd23f" stroke="#e59a00" stroke-width="3" stroke-linejoin="round"/><path d="M42 12l6-6 10 10-6 6z" fill="#ff7a8a" stroke="#c2415a" stroke-width="3" stroke-linejoin="round"/><path d="M10 54l4-14 10 10z" fill="#f5deb3" stroke="#c9a46b" stroke-width="3" stroke-linejoin="round"/></symbol><symbol id="i-heart" viewBox="0 0 64 64"><path d="M32 56S6 40 6 22c0-8 6-14 13-14 6 0 10 3 13 8 3-5 7-8 13-8 7 0 13 6 13 14 0 18-26 34-26 34z" fill="#ff5d8f" stroke="#c2185b" stroke-width="3" stroke-linejoin="round"/><path d="M16 20c1-4 4-6 7-6" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none"/></symbol><symbol id="i-medal" viewBox="0 0 64 64"><path d="M18 4l10 22M46 4L36 26" stroke="#2f6bff" stroke-width="7" stroke-linecap="round"/><circle cx="32" cy="40" r="18" fill="#ffd23f" stroke="#e59a00" stroke-width="3"/><circle cx="32" cy="40" r="10" fill="none" stroke="#fff" stroke-width="3"/></symbol><symbol id="i-kid" viewBox="0 0 64 64"><path d="M10 64c0-14 9-20 22-20s22 6 22 20z" fill="#2f6bff"/><circle cx="32" cy="26" r="15" fill="#ffd9b0" stroke="#d99a5b" stroke-width="2.5"/><path d="M16 25c0-13 9-18 16-18s16 5 16 18c-4-7-10-9-16-9s-12 2-16 9z" fill="#3b2a20"/><circle cx="26" cy="28" r="2.3" fill="#3b2a20"/><circle cx="38" cy="28" r="2.3" fill="#3b2a20"/><circle cx="22" cy="33" r="3" fill="#ffb3b3"/><circle cx="42" cy="33" r="3" fill="#ffb3b3"/><path d="M26 34q6 6 12 0" stroke="#c2415a" stroke-width="2.5" fill="none" stroke-linecap="round"/></symbol><symbol id="i-lock" viewBox="0 0 64 64"><rect x="12" y="28" width="40" height="30" rx="7" fill="#9aa5bd"/><path d="M21 28v-8a11 11 0 0122 0v8" fill="none" stroke="#9aa5bd" stroke-width="6"/></symbol><symbol id="i-check" viewBox="0 0 64 64"><circle cx="32" cy="32" r="28" fill="#1fa862"/><path d="M18 33l9 9 19-20" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></symbol><symbol id="i-dot" viewBox="0 0 64 64"><circle cx="32" cy="32" r="26" fill="#ff7a2f"/><circle cx="32" cy="32" r="10" fill="#fff"/></symbol></svg>
+<header><b><svg class="ic"><use href="#i-star"/></svg> Petualangan Matematika</b><span><button id="mu" class="mu"></button> <small id="xp"></small> <small id="tm" style="display:none">⏱️ 00:00</small></span></header>
+<div id="prog"><div id="chips"></div><div class="barw"><div id="bar"></div></div><div id="pct"></div></div>
+<main id="app"></main>
+<script>
+const API_URL="https://script.google.com/macros/s/AKfycbx7XfHmbP42hUkLi_ZUP-cZ9m5pjcqudXpmpWE5_QUR-M7AZRJRQrwXf6ccGneuwhz8/exec";
+const MATERI="Pembulatan Hasil Pengukuran dan Kejujuran dalam Menimbang";
+const KEY="pbj_state_v1",PEND="pbj_pending_v1";
+const NAMES=['Nama','Materi','Pembulatan','Panjang','Berat','Jujur','Kuis','Hasil'];
+const ICONS=['kid','book','pencil','ruler','scale','heart','trophy','medal'];
+const BADGE={2:'JAGO MEMBULATKAN',4:'AHLI PENGUKURAN',5:'PEJUANG KEJUJURAN'};
+const KN={obj:'menentukan benda yang ditimbang',berat:'membaca berat benda',digit:'menemukan angka setelah koma',cmp:'membandingkan angka dengan 5',dir:'menentukan pembulatan ke atas atau ke bawah',fin:'menentukan hasil akhir',tim:'membaca hasil timbangan',say:'membaca ucapan tokoh',jujur:'menilai sikap jujur'};
+const fresh=n=>({name:n||'',stage:0,start:0,end:0,xp:0,badges:[],qi:0,res:[],sent:false,result:null});
+let S;try{S=Object.assign(fresh(),JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){S=fresh()}
+let LS={ci:0,pi:-1},sending=false;
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ic=(n,c)=>'<svg class="ic '+(c||'')+'" aria-hidden="true"><use href="#i-'+n+'"/></svg>';
+const nm=()=>esc(S.name);
+const shuf=a=>a.map(x=>[Math.random(),x]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);
+const P=v=>{const a=v.split(',');return{w:+a[0],d:+a[1]}};
+const big=(v,u,hi)=>{const p=P(v);return`<div class="big">${p.w},<span class="${hi?'hl':''}">${p.d}</span> ${u}</div>`};
+const cmpW=d=>d<5?'lebih kecil dari':d==5?'sama dengan':'lebih besar dari';
+const fmt=s=>{s=Math.floor(s);return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')};
+
+/* ---------- musik & efek suara ---------- */
+const AU={ctx:null,mg:null,timer:null,step:0,on:(()=>{try{return localStorage.getItem('pbj_music')!=='0'}catch(e){return true}})()};
+const NT=[261.63,293.66,329.63,392,440,523.25,587.33,659.25],BS=[130.81,110,87.31,98];
+const MEL=[[2,3,5,3,2,3,5,3],[4,3,2,3,4,5,4,2],[3,5,6,5,3,5,3,2],[2,3,4,3,2,1,2,-1]];
+function actx(){if(!AU.ctx){const C=window.AudioContext||window.webkitAudioContext;if(!C)return null;AU.ctx=new C();AU.mg=AU.ctx.createGain();AU.mg.connect(AU.ctx.destination)}if(AU.ctx.state==='suspended')AU.ctx.resume();return AU.ctx}
+function tone(f,t,d,type,v,dest){const c=AU.ctx,o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.value=f;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(v,t+.03);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(dest||c.destination);o.start(t);o.stop(t+d+.05)}
+function bar(){if(!AU.on||!AU.timer)return;const c=AU.ctx,t=c.currentTime+.05,b=AU.step%4;MEL[b].forEach((n,i)=>{if(n>=0)tone(NT[n],t+i*.3,.26,'triangle',.5,AU.mg)});tone(BS[b],t,.9,'sine',.7,AU.mg);tone(BS[b],t+1.2,.9,'sine',.6,AU.mg);AU.step++;AU.timer=setTimeout(bar,2400)}
+function startSynth(){if(!AU.on||AU.timer)return;const c=actx();if(!c)return;AU.mg.gain.value=.13;AU.timer=setTimeout(bar,10)}
+function startMusic(){if(!AU.on)return;if(AU.file!==false){if(!AU.el){AU.el=new Audio('audio/backsound.mp3');AU.el.loop=true;AU.el.volume=.35;AU.el.onerror=()=>{AU.file=false;startSynth()}}AU.el.play().catch(()=>{if(AU.el&&AU.el.error){AU.file=false;startSynth()}});return}startSynth()}
+function pauseMusic(){if(AU.el)AU.el.pause();if(AU.timer){clearTimeout(AU.timer);AU.timer=null}if(AU.mg)AU.mg.gain.value=0}
+function sfx(k){if(!AU.on)return;const c=actx();if(!c)return;const t=c.currentTime+.02;
+ if(k=='ok'){tone(659,t,.18,'sine',.25);tone(880,t+.12,.3,'sine',.25)}
+ else if(k=='no'){tone(247,t,.22,'triangle',.22);tone(196,t+.2,.3,'triangle',.22)}
+ else[523,659,784,1047].forEach((f,i)=>tone(f,t+i*.12,.35,'sine',.25))}
+function updateMu(){$('mu').innerHTML=ic(AU.on?'spk':'mute')+' Musik '+(AU.on?'ON':'OFF');$('mu').setAttribute('aria-pressed',AU.on)}
+$('mu').onclick=()=>{AU.on=!AU.on;try{localStorage.setItem('pbj_music',AU.on?'1':'0')}catch(e){}if(AU.on){if(S.stage>0)startMusic();sfx('ok')}else pauseMusic();updateMu()};
+document.addEventListener('pointerdown',()=>{if(S.stage>0)startMusic()});
+document.addEventListener('visibilitychange',()=>{if(document.hidden)pauseMusic();else if(S.stage>0)startMusic()});
+/* ---------- efek ---------- */
+function conf(){const e=['🎉','⭐','✨','🎊','🌟'];for(let i=0;i<24;i++){const s=document.createElement('span');s.className='cf';s.innerHTML=ic('star');s.style.left=Math.random()*96+'vw';s.style.animationDelay=Math.random()*.6+'s';s.style.fontSize=(16+Math.random()*16)+'px';document.body.appendChild(s);setTimeout(()=>s.remove(),3400)}}
+function toast(t){const d=document.createElement('div');d.id='toast';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),2600)}
+setInterval(()=>{if(S.start&&$('tm'))$('tm').textContent='⏱️ '+fmt(((S.end||Date.now())-S.start)/1000)},1000);
+
+/* ---------- header & progress ---------- */
+function chrome(){
+ $('xp').innerHTML=`${ic('star')} ${S.xp} XP • ${ic('rocket')} Level ${Math.floor(S.xp/80)+1}`;
+ $('tm').style.display=S.start?'':'none';
+ const pct=Math.round(S.stage/7*100);
+ $('bar').style.width=pct+'%';$('pct').textContent='🎯 '+pct+'%';
+ $('prog').style.display=S.stage?'':'none';
+ $('chips').innerHTML=NAMES.map((n,i)=>{const c=i<S.stage?'done':i==S.stage?'act':'lock';return`<div class="chip ${c}">${ic(ICONS[i])} ${n}<b>${c=='done'?ic('check'):c=='act'?ic('dot'):ic('lock')}</b></div>`}).join('');
+}
+function render(){
+ chrome();window.scrollTo({top:0});
+ if(S.stage==0)welcome();else if(S.stage<6)lesson();else if(S.stage==6)quiz();else result();
+}
+function go(){LS={ci:0,pi:-1};render()}
+
+/* ---------- halaman pembuka ---------- */
+function welcome(){
+ $('app').innerHTML=`<div class="card pop hero"><div class="scene">${ic('ruler')}${ic('kid','k')}${ic('scale')}</div><div class="scene s2">${ic('star')}${ic('rocket')}${ic('trophy')}</div><h1>PETUALANGAN MATEMATIKA</h1><p class="sub">Pembulatan Hasil Pengukuran<br>dan Kejujuran dalam Menimbang</p><p><label for="nm"><b>Siapa nama kamu?</b></label></p><input id="nm" maxlength="40" placeholder="Ketik nama kamu" autocomplete="off" value="${nm()}"><div id="er" class="err"></div><button class="btn" id="st">🚀 MULAI BELAJAR</button></div>`;
+ $('st').onclick=()=>{const n=$('nm').value.trim();if(!n){$('er').textContent='😊 Tulis namamu terlebih dahulu ya!';return}
+  S=fresh(n);S.start=Date.now();S.stage=1;save();startMusic();sfx('win');toast('Selamat datang, '+n+'! 🚀');go()};
+}
+
+
+function rulerSVG(v,u){const {w,d}=P(v),a=Math.max(0,w-2);
+ let s='<svg viewBox="0 0 380 118" class="illu" role="img" aria-label="Penggaris menunjukkan '+v+' '+u+'"><rect x="6" y="42" width="368" height="56" rx="9" fill="#ffd23f" stroke="#e59a00" stroke-width="3"/><rect x="10" y="46" width="360" height="8" rx="4" fill="#fff6" />';
+ for(let i=0;i<=50;i++){const X=20+i*6.8,b=i%10==0,m=i%5==0;s+='<path d="M'+X+' 54v'+(b?24:m?17:10)+'" stroke="#7a4a00" stroke-width="'+(b?3:1.6)+'" stroke-linecap="round"/>';if(b)s+='<text x="'+X+'" y="92" text-anchor="middle" font-size="16" font-weight="900" fill="#7a4a00">'+(a+i/10)+'</text>'}
+ const X=20+((w-a)*10+d)*6.8;
+ s+='<path d="M'+X+' 44l-9-16h18z" fill="#e11d48"/><path d="M'+X+' 44V98" stroke="#e11d48" stroke-width="2.5" stroke-dasharray="4 3"/><rect x="'+(X-34)+'" y="2" width="68" height="22" rx="11" fill="#fff" stroke="#e11d48" stroke-width="2.5"/><text x="'+X+'" y="18" text-anchor="middle" font-size="15" font-weight="900" fill="#e11d48">'+v+' '+u+'</text></svg>';return s}
+function dialSVG(v){const {w,d}=P(v),val=w+d/10,ang=a=>(-120+a/10*240)*Math.PI/180,pt=(a,r)=>[110+Math.sin(ang(a))*r,100-Math.cos(ang(a))*r];
+ let s='<svg viewBox="0 0 220 205" class="illu" role="img" aria-label="Timbangan menunjukkan '+v+' kg"><rect x="22" y="168" width="176" height="28" rx="12" fill="#6d4bd8"/><rect x="30" y="172" width="160" height="6" rx="3" fill="#fff4"/><circle cx="110" cy="100" r="88" fill="#14c7e0" stroke="#0e8fa3" stroke-width="4"/><circle cx="110" cy="100" r="76" fill="#f7fdff" stroke="#bfe9f2" stroke-width="2"/><path d="M60 52a70 70 0 0120-12" stroke="#fff" stroke-width="6" stroke-linecap="round" fill="none" opacity=".8"/>';
+ for(let i=0;i<=20;i++){const A=i/2,b=i%2==0,p1=pt(A,b?60:66),p2=pt(A,72);s+='<path d="M'+p1[0]+' '+p1[1]+'L'+p2[0]+' '+p2[1]+'" stroke="#1f2a44" stroke-width="'+(b?3:1.5)+'"/>';if(b){const q=pt(A,48);s+='<text x="'+q[0]+'" y="'+(q[1]+5)+'" text-anchor="middle" font-size="14" font-weight="900" fill="#1f2a44">'+A+'</text>'}}
+ const n=pt(val,60);
+ s+='<text x="110" y="138" text-anchor="middle" font-size="16" font-weight="900" fill="#6d4bd8">'+v+' kg</text><path d="M110 100L'+n[0]+' '+n[1]+'" stroke="#e11d48" stroke-width="4.5" stroke-linecap="round"/><circle cx="110" cy="100" r="8" fill="#e11d48" stroke="#fff" stroke-width="3"/></svg>';return s}
+function marketSVG(){return '<svg viewBox="0 0 320 170" class="illu" role="img" aria-label="Penjual dan pembeli di dekat timbangan"><rect width="320" height="170" rx="18" fill="#e6f7ff"/><path d="M0 128h320v42H0z" fill="#c9eefb"/><path d="M26 14h268l-14 34H40z" fill="#ff7a2f"/><path d="M62 14l-4 34M110 14l-3 34M160 14v34M210 14l3 34M258 14l4 34" stroke="#fff" stroke-width="6"/><use href="#i-kid" x="10" y="54" width="90" height="90"/><use href="#i-kid" x="220" y="54" width="90" height="90"/><rect x="36" y="116" width="248" height="14" rx="5" fill="#8b5a2b"/><rect x="56" y="130" width="10" height="38" fill="#6b4420"/><rect x="254" y="130" width="10" height="38" fill="#6b4420"/><use href="#i-scale" x="126" y="60" width="68" height="68"/><rect x="110" y="40" width="100" height="26" rx="13" fill="#fff" stroke="#1fa862" stroke-width="3"/><text x="160" y="58" text-anchor="middle" font-size="16" font-weight="900" fill="#116b3d">2,5 kg ✓</text></svg>'}
+/* ---------- bahan materi ---------- */
+function ex(v,u,t){const {w,d}=P(v),up=d>=5,r=up?w+1:w;
+ return`<div class="ex"><div class="tag">${t}</div>${big(v,u,1)}${u=='cm'||u=='m'?rulerSVG(v,u):dialSVG(v)}<ol><li>Langkah 1: Lihat angka setelah koma. Angkanya <b>${d}</b>.</li><li>Langkah 2: Bandingkan ${d} dengan 5. ${d} ${cmpW(d)} 5.</li><li>Langkah 3: ${d<5?`Karena ${d} kurang dari 5, dibulatkan ke <b>bawah</b> ⬇️.`:`Karena ${d} adalah 5 atau lebih, dibulatkan ke <b>atas</b> ⬆️.`}</li><li>Langkah 4: ${up?`Angka ${w} naik menjadi <b>${r}</b>.`:`Angka ${w} tetap <b>${w}</b>.`}</li></ol><p class="res">${v} ${u} ≈ ${r} ${u}</p></div>`}
+const digitsHTML=`<div class="digits">${[0,1,2,3,4,5,6,7,8,9].map(n=>`<div class="dg ${n<5?'dn':'du'}">${n}<small>${n<5?'⬇️ turun':'⬆️ naik'}</small></div>`).join('')}</div>`;
+const LESSON={
+1:{title:'📚 Kenali Materi',prac:[],cards:[
+`<h2>📖 Apa itu pembulatan?</h2><p>Kadang hasil mengukur itu panjang dan rumit, misalnya <b>12,3 cm</b>. Pembulatan adalah cara <b>menyederhanakan</b> angka itu menjadi angka yang lebih mudah dibaca dan dipakai.</p><div class="vis"><div class="big">12,3 cm ➜ 12 cm</div></div><p>Tanda untuk "kira-kira sama dengan" adalah <b>≈</b>. Jadi 12,3 cm ≈ 12 cm.</p><p>💡 <b>Contoh:</b> penggaris kita menunjukkan pensil sedikit lebih dari 12 cm. Kita bilang saja "pensilku kira-kira 12 cm".</p>`,
+`<h2>🤔 Mengapa kita membulatkan?</h2><p>Bayangkan temanmu bertanya, "Berapa panjang bukumu?" Lebih mudah menjawab <b>kira-kira 21 cm</b> daripada 21,4 cm, bukan?</p><p>Pembulatan dipakai saat:</p><p>✏️ mengukur panjang pensil<br>📘 mengukur panjang buku<br>🪑 mengukur panjang meja<br>🍚 menimbang beras<br>🍊 menimbang buah<br>🧺 menimbang benda lainnya</p><p>Dengan pembulatan, angka jadi lebih mudah diingat dan dibandingkan.</p>`,
+`<h2>🔎 Angka setelah koma menentukan segalanya</h2><p>Tanda koma memisahkan angka menjadi dua bagian.</p><div class="vis"><div class="big">12 , <span class="hl">3</span></div></div><p>👉 <b>12</b> adalah bilangan utamanya.<br>👉 <b>3</b> adalah angka setelah koma, yaitu angka tepat di kanan koma.</p><p>Angka setelah koma menjawab pertanyaan: <i>"Hasil ukurnya lebih dekat ke 12 atau ke 13?"</i> Kita akan belajar caranya di tahap berikutnya.</p>`,
+`<h2>🎯 Mini challenge</h2><p>Ayo coba dalam hati dulu, lalu ketuk untuk melihat jawabannya.</p><details><summary>Pada 7,4 angka setelah koma adalah...?</summary><p>Angkanya <b>4</b>. 🎉</p></details><details><summary>Pada 25,8 angka setelah koma adalah...?</summary><p>Angkanya <b>8</b>. 🎉</p></details><details><summary>Pada 30,6 yang bilangan utamanya adalah...?</summary><p>Bilangan utamanya <b>30</b>. 🎉</p></details>`]},
+2:{title:'📏 Belajar Membulatkan',cards:[
+`<h2>📏 Yuk lihat caranya!</h2>${big('12,3','cm',1)}<p>🔍 <b>Perhatikan angka setelah koma.</b> Angkanya <b>3</b>.</p><p>⚖️ Bandingkan: <b>3 &lt; 5</b></p><p>💬 Karena 3 kurang dari 5, kita membulatkan ke <b>bawah</b> ⬇️.</p><div class="vis"><div class="big">12,3 cm <span class="arrow">➜</span> 12 cm</div></div>`,
+`<h2>🧠 Cara mudah mengingat</h2><p><b>0 sampai 4 turun,<br>5 sampai 9 naik.</b></p>${digitsHTML}<p>Mengapa 5 naik? Karena 12,5 ada di tengah-tengah 12 dan 13. Kesepakatannya: kalau tepat di tengah, kita naik ke atas.</p><p>🪜 Bayangkan tangga: angka 0-4 dekat dengan lantai bawah, angka 5-9 dekat dengan lantai atas.</p>`],
+ prac:[{k:'m',d:6,q:'Latihan kilat ⚡ 1'},{k:'m',d:2,q:'Latihan kilat ⚡ 2'},{k:'m',d:5,q:'Latihan kilat ⚡ 3'}]},
+3:{title:'📐 Pembulatan Panjang',cards:[
+`<h2>📐 Membulatkan hasil mengukur panjang</h2><p>Saat memakai penggaris, ujung benda sering berada di antara dua angka. Kita bulatkan agar mudah dibaca.</p><div class="scene s2">${ic('pencil')}${ic('book')}${ic('ruler')}</div><p>Pensil, buku, meja, atau benda lain semua bisa dibulatkan.</p><p>Rumusnya selalu sama: <b>lihat angka setelah koma → bandingkan dengan 5 → turun atau naik.</b></p>`,
+ex('12,3','cm','✏️ Panjang pensil'),ex('14,8','cm','📘 Panjang buku'),ex('21,4','cm','🪑 Panjang meja kecil'),ex('17,5','cm','📏 Panjang benda')],
+ prac:[{k:'l',v:'12,3',u:'cm',obj:'pensil',q:'Panjang sebuah pensil adalah 12,3 cm. Jika dibulatkan ke satuan terdekat, berapa hasilnya?'}]},
+4:{title:'⚖️ Pembulatan Berat',cards:[
+`<h2>⚖️ Membulatkan hasil menimbang</h2><p>Timbangan juga sering menunjukkan angka berkoma, misalnya beras <b>4,7 kg</b>. Cara membulatkannya sama persis dengan panjang.</p><div class="scene s2">${ic('sack')}${ic('orange')}${ic('melon')}</div><p>Bedanya hanya satuannya: sekarang <b>kg</b>, bukan cm.</p>`,
+ex('4,7','kg','🍚 Berat beras'),ex('3,2','kg','🍊 Berat jeruk'),ex('6,5','kg','🍎 Berat apel'),ex('8,9','kg','🍉 Berat semangka')],
+ prac:[{k:'b',v:'4,7',u:'kg',obj:'beras',q:'Berat sebuah kantong beras adalah 4,7 kg. Jika dibulatkan ke satuan terdekat, berapa hasilnya?'}]},
+5:{title:'🤝 Kejujuran dalam Menimbang',cards:[
+`<h2>🕌 Pesan Al-Qur'an</h2><p>Sesuai petunjuk Al-Qur'an <b>Q.S. Al-Isra': 35</b>, kita harus menakar dan menimbang dengan <b>tepat dan jujur</b>. Tidak boleh mengurangi timbangan atau ukuran.</p><p>Jadi saat mengukur atau menimbang kita harus:</p><p>✅ jujur<br>✅ tidak mengurangi hasil<br>✅ tidak menambah hasil dengan sengaja<br>✅ tidak menipu<br>✅ menyampaikan hasil sebenarnya<br>✅ amanah (bisa dipercaya)</p>`,
+`<h2>🛒 Contoh sehari-hari</h2>${marketSVG()}<p>⚖️ Timbangan menunjukkan <b>1 kg</b>. Kita tidak boleh berkata "900 gram" hanya supaya untung sendiri. 🙅</p><p>⚖️ Timbangan menunjukkan <b>2,5 kg</b>. Kita harus mengatakannya sesuai hasil pengukuran: <b>2,5 kg</b>. 🙆</p><p>Pembulatan dilakukan dengan aturan yang benar dan terbuka, bukan untuk menipu.</p>`,
+`<h2>🌈 Tahukah Kamu?</h2><p>Matematika dan kejujuran adalah sahabat! Angka yang benar membuat penjual dan pembeli sama-sama adil.</p><p>Kalau kita jujur menyebut hasil timbangan, orang lain percaya pada kita. Orang yang dipercaya disebut orang yang <b>amanah</b>. 🌟</p>`],
+ prac:[{k:'j',name:'Ali',shown:'2,6 kg',says:'2,6 kg',honest:1,q:'Ali membantu ibunya menimbang beras. Timbangan menunjukkan 2,6 kg. Ali menyampaikan hasil timbangan itu dengan jujur: "2,6 kg".',why:'Ali menyebut hasil sesuai timbangan. Itu sikap jujur dan amanah.'},
+ {k:'j',name:'Tono',shown:'3 kg',says:'2 kg 700 gram',honest:0,q:'Tono membantu ayahnya menjual mangga. Timbangan menunjukkan 3 kg. Tono berkata, "Beratnya 2 kg 700 gram," supaya sisanya bisa ia ambil sendiri.',why:'Timbangan menunjukkan 3 kg, tetapi Tono mengatakan 2 kg 700 gram. Itu mengurangi timbangan dan tidak jujur.'}]}
+};
+const R=(k,v,u,obj,q)=>({k,v,u,obj,q});
+const QUIZ=[
+R('l','7,2','cm','tali','Panjang sebuah tali adalah 7,2 cm. Jika dibulatkan ke satuan terdekat, berapa hasilnya?'),
+R('l','16,5','cm','buku','Panjang sebuah buku tulis adalah 16,5 cm. Jika dibulatkan ke satuan terdekat, berapa hasilnya?'),
+R('l','9,8','cm','penghapus','Panjang sebuah penghapus kayu adalah 9,8 cm. Jika dibulatkan ke satuan terdekat, berapa hasilnya?'),
+R('b','2,4','kg','jeruk','Berat sekeranjang jeruk adalah 2,4 kg. Jika dibulatkan ke satuan terdekat, berapa hasilnya?'),
+R('b','7,5','kg','semangka','Berat sebuah semangka adalah 7,5 kg. Jika dibulatkan ke satuan terdekat, berapa hasilnya?'),
+R('b','3,9','kg','gula','Berat sekantong gula adalah 3,9 kg. Jika dibulatkan ke satuan terdekat, berapa hasilnya?'),
+R('b','6,3','kg','tepung','Ibu membeli tepung. Timbangan menunjukkan 6,3 kg. Jika dibulatkan ke kilogram terdekat, berapa hasilnya?'),
+R('l','19,5','m','kain','Ayah mengukur kain untuk tirai. Panjang kain 19,5 m. Jika dibulatkan ke meter terdekat, berapa hasilnya?'),
+{k:'j',name:'Rina',shown:'1 kg',says:'1 kg',honest:1,q:'Rina membantu ibunya menimbang gula. Timbangan menunjukkan 1 kg. Rina mengatakan bahwa berat gula adalah 1 kg.',why:'Rina menyebut berat sesuai timbangan. Ia jujur dan tidak mengurangi hasil.'},
+{k:'j',name:'Pak Budi',shown:'2 kg',says:'1 kg 800 gram',honest:0,q:'Pak Budi menimbang jeruk. Timbangan menunjukkan 2 kg. Pak Budi berkata, "Beratnya 1 kg 800 gram," lalu menyimpan sisanya diam-diam.',why:'Timbangan menunjukkan 2 kg, tetapi Pak Budi menyebut 1 kg 800 gram. Itu mengurangi timbangan dan tidak jujur.'}
+];
+
+/* ---------- pembuat langkah ---------- */
+function ansOf(p){if(p.k=='j')return p.honest?'Jujur':'Tidak jujur';const x=P(p.v);return(x.d>=5?x.w+1:x.w)+' '+p.u}
+function mk(p){
+ if(p.k=='m'){const up=p.d>=5;return[{k:'dir',fix:1,t:`Angka ${p.d} dibulatkan ke mana?`,vis:`<div class="big">${p.d}</div>`,o:['Bawah ⬇️','Atas ⬆️'],a:up?'Atas ⬆️':'Bawah ⬇️',ok:up?`Betul! ${p.d} termasuk 5 sampai 9, jadi naik.`:`Betul! ${p.d} termasuk 0 sampai 4, jadi turun.`,hint:'Ingat: 0 sampai 4 turun, 5 sampai 9 naik. Angka tadi termasuk yang mana?'}].map(s=>(p.exp=`${p.d} ${up?'termasuk 5 sampai 9, jadi dibulatkan ke <b>atas</b>.':'termasuk 0 sampai 4, jadi dibulatkan ke <b>bawah</b>.'}`,p.ans=up?'Atas':'Bawah',s))}
+ if(p.k=='j'){
+  const pool=['500 gram','1 kg','2 kg','3 kg','1 kg 800 gram','2 kg 700 gram','2,6 kg','2,5 kg'];
+  const op=x=>[x,...shuf(pool.filter(y=>y!=x)).slice(0,3)];
+  p.exp=p.why+' (Q.S. Al-Isra\': 35)';p.ans=ansOf(p);
+  return[{k:'baca',ready:1,t:'Bacalah cerita dengan teliti. Apa yang terjadi di cerita ini?',vis:ic('book','xl')},
+  {k:'tim',t:'Timbangan menunjukkan berapa?',vis:ic('scale','xl'),o:op(p.shown),a:p.shown,ok:`Betul! Timbangan menunjukkan ${p.shown}.`,hint:'Baca lagi kalimat tentang timbangan.'},
+  {k:'say',t:`Apa yang dikatakan ${p.name}?`,vis:'<div class="big">💬</div>',o:op(p.says),a:p.says,ok:`Betul! ${p.name} menyebut ${p.says}.`,hint:`Baca lagi apa yang diucapkan ${p.name}.`},
+  {k:'jujur',fix:1,t:`Apakah ${p.name} sudah bersikap jujur?`,vis:'<div class="big">🤔</div>',o:['Ya','Tidak'],a:p.honest?'Ya':'Tidak',ok:p.honest?`Betul! ${p.name} jujur karena hasil yang disebut sama dengan timbangan.`:`Betul! ${p.name} tidak jujur karena hasil yang disebut berbeda dari timbangan.`,hint:'Bandingkan hasil timbangan dengan yang dikatakan. Apakah sama? Apakah ada niat mengurangi atau menipu?'}]}
+ const {w,d}=P(p.v),up=d>=5,r=up?w+1:w,u=p.u,fin=`${r} ${u}`,st=[];
+ if(p.k=='l')st.push({k:'baca',ready:1,t:'Bacalah soal dengan teliti. Angka manakah yang harus kita perhatikan? Yuk cari bersama!',vis:rulerSVG(p.v,u)+big(p.v,u,0)});
+ else{
+  st.push({k:'obj',t:'Apa benda yang ditimbang?',vis:ic(({beras:'sack',jeruk:'orange',semangka:'melon'})[p.obj]||'scale','xl'),o:[p.obj,...shuf(['beras','gula','jeruk','tepung','mangga','semangka','apel'].filter(x=>x!=p.obj)).slice(0,3)],a:p.obj,ok:`Betul! Yang ditimbang adalah ${p.obj}.`,hint:'Baca lagi soalnya. Benda apa yang ada di timbangan?'});
+  const alt=[...new Set([`${w},${(d+3)%10}`,`${w+1},${d}`,`${w},${(d+6)%10}`])].filter(x=>x!=p.v);
+  st.push({k:'berat',t:'Berapa berat benda itu?',vis:dialSVG(p.v),o:[p.v+' '+u,...alt.slice(0,3).map(x=>x+' '+u)],a:p.v+' '+u,ok:`Betul! Beratnya ${p.v} ${u}.`,hint:'Baca lagi soalnya. Berapa angka yang tertulis?'});
+ }
+ st.push({k:'digit',t:'Angka berapakah yang berada tepat setelah koma?',vis:big(p.v,u,1),o:[...new Set([d,(d+2)%10,(d+5)%10,w])].map(String),a:String(d),ok:`Betul! Angka setelah koma adalah ${d}.`,hint:`Perhatikan angka tepat di sebelah kanan koma pada ${p.v}.`});
+ st.push({k:'cmp',fix:1,t:`Apakah ${d} lebih kecil atau lebih besar dari 5?`,vis:`<div class="big"><span class="hl">${d}</span> ❓ 5</div>`,o:['Lebih kecil','Lebih besar','Sama'],a:d<5?'Lebih kecil':d==5?'Sama':'Lebih besar',ok:`Betul! ${d} ${cmpW(d)} 5. ${d<5?'Jika angka setelah koma kurang dari 5, kita membulatkan ke bawah.':'Jika angka setelah koma 5 atau lebih, kita membulatkan ke atas.'}`,hint:`Bandingkan ${d} dengan 5 pada angka 0 1 2 3 4 5 6 7 8 9. Apakah ${d} ada di kiri atau kanan 5?`});
+ st.push({k:'dir',fix:1,t:`Jadi, ${p.v} harus dibulatkan ke...`,vis:`<div class="big">${p.v} ${u} ❓</div>`,o:['Bawah ⬇️','Atas ⬆️'],a:up?'Atas ⬆️':'Bawah ⬇️',ok:up?'Hebat! Angka 5 sampai 9 naik, jadi dibulatkan ke atas.':'Hebat! Angka 0 sampai 4 turun, jadi dibulatkan ke bawah.',hint:`Ingat: 0 sampai 4 turun, 5 sampai 9 naik. Angka ${d} termasuk yang mana?`});
+ st.push({k:'fin',t:'Jadi hasil akhirnya adalah...',vis:`<div class="big">${p.v} <span class="arrow">➜</span> ?</div>`,o:[...new Set([r,r-1,r+1,r+2])].sort((a,b)=>a-b).map(x=>x+' '+u),a:fin,ok:up?`Naik berarti ${w} menjadi ${r}. Jadi ${p.v} ${u} ≈ ${fin}.`:`Turun berarti angka ${w} tetap. Jadi ${p.v} ${u} ≈ ${fin}.`,hint:up?`Naik berarti ${w} ditambah 1.`:`Turun berarti angka ${w} tetap, tidak berubah.`});
+ p.exp=`<ol><li>Angka setelah koma pada ${p.v} adalah <b>${d}</b>.</li><li>${d} ${cmpW(d)} 5.</li><li>${d<5?'Kurang dari 5 → dibulatkan ke <b>bawah</b> ⬇️.':'5 atau lebih → dibulatkan ke <b>atas</b> ⬆️.'}</li><li>${up?`${w} naik menjadi ${r}.`:`${w} tetap ${w}.`}</li></ol><p class="res">${p.v} ${u} ≈ ${fin}</p>`;
+ p.ans=fin;return st;
+}
+
+/* ---------- mesin soal step-by-step ---------- */
+function run(p,done,lab,nextLab){
+ const steps=mk(p);let si=0,wr=[],cnt=0,sw=false;
+ function drawOpts(s){
+  $('ops').innerHTML=s.o.map((o,i)=>`<button class="opt" data-i="${i}">${o}</button>`).join('');
+  document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>pick(b,s));
+ }
+ function show(){
+  const s=steps[si];sw=false;
+  const ind=steps.map((x,i)=>`<span class="stp ${i<si?'ok':i==si?'on':'lk'}">${i<si?ic('check'):i==si?ic('dot'):ic('lock')} Langkah ${i+1}</span>`).join('');
+  if(s.o&&!s.fix)s.o=shuf(s.o);
+  $('app').innerHTML=`<div class="card pop"><div class="tag">${lab}</div><div class="stps">${ind}</div><div class="story">${p.q}</div>${s.vis?`<div class="vis">${s.vis}</div>`:''}<h2>${s.t}</h2><div id="ops">${s.ready?'<button class="btn" id="rd">➡️ SAYA SIAP</button>':''}</div><div id="fb"></div></div>`;
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(s.ready)$('rd').onclick=()=>{si++;show()};else drawOpts(s);
+ }
+ function pick(b,s){
+  const ok=s.o[+b.dataset.i]===s.a;
+  document.querySelectorAll('.opt').forEach(x=>x.disabled=true);
+  if(ok){
+   b.classList.add('good');b.insertAdjacentText('beforeend',' ✓');sfx('ok');if(!sw)S.xp+=10;save();chrome();
+   const last=si==steps.length-1;
+   $('fb').innerHTML=`<div class="fb good">${ic('kidh','fbk')}<b>🎉 BENAR!</b> Hebat, ${nm()}!<p>${s.ok}</p><small>${sw?'':'+10 XP ⭐'}</small></div><button class="btn" id="nx">${last?'🏆 LIHAT PEMBAHASAN':'➡️ LANJUT'}</button>`;
+   $('nx').onclick=()=>{si++;si>=steps.length?fin():show()};
+  }else{
+   b.classList.add('bad');b.insertAdjacentText('beforeend',' ✕');sfx('no');wr.push(s.k);cnt++;sw=true;
+   $('fb').innerHTML=`<div class="fb bad">${ic('kidt','fbk')}<b>💡 BELUM TEPAT</b><p>Jangan menyerah, ${nm()}! Yuk kita periksa lagi. Sedikit lagi!</p><p>🔎 <i>Petunjuk:</i> ${s.hint}</p></div><button class="btn alt" id="rt">🔄 COBA LAGI</button>`;
+   $('rt').onclick=()=>{$('fb').innerHTML='';drawOpts(s)};
+  }
+ }
+ function fin(){
+  S.xp+=10;save();chrome();
+  const u=[...new Set(wr)].map(k=>KN[k]).filter(Boolean);
+  $('app').innerHTML=`<div class="card pop"><div class="tag">${lab}</div><h2>🏆 SOAL SELESAI!</h2><div class="story">${p.q}</div><div class="fb good"><b>📘 Pembahasan:</b><p>${p.exp}</p></div><p>${u.length?'💡 Yang perlu kamu ingat lagi: '+u.join(', ')+'.':'⭐ Hebat, kamu menyelesaikannya tanpa salah!'} +10 XP</p><button class="btn" id="nx">${nextLab}</button></div>`;
+  $('nx').onclick=()=>done({tries:cnt+1,wrong:[...new Set(wr)]});
+ }
+ show();
+}
+
+/* ---------- tahap materi ---------- */
+function lesson(){
+ const L=LESSON[S.stage],n=L.cards.length;
+ if(LS.pi>=L.prac.length&&L.prac.length){finishCard('🎉 Latihan selesai!','Kamu sudah mengerjakan semua latihan tahap ini.');return}
+ if(LS.pi>=0){run(L.prac[LS.pi],()=>{LS.pi++;lesson()},`${L.title} • Latihan ${LS.pi+1}/${L.prac.length}`,LS.pi==L.prac.length-1?'✅ SELESAI LATIHAN':'➡️ LATIHAN BERIKUTNYA');return}
+ const last=LS.ci==n-1;
+ $('app').innerHTML=`<div class="card pop"><div class="tag">${L.title} • Kartu ${LS.ci+1}/${n}</div>${L.cards[LS.ci]}<div class="row">${LS.ci>0?'<button class="btn ghost" id="bk">⬅️ Kembali</button>':''}<button class="btn" id="nx">${last?(L.prac.length?'🎯 MULAI LATIHAN':'✅ SAYA SUDAH MEMAHAMI'):'Lanjut ➡️'}</button></div></div>`;
+ if($('bk'))$('bk').onclick=()=>{LS.ci--;lesson();window.scrollTo(0,0)};
+ $('nx').onclick=()=>{if(!last){LS.ci++;lesson();window.scrollTo(0,0)}else if(L.prac.length){LS.pi=0;lesson()}else complete()};
+}
+function finishCard(t,m){$('app').innerHTML=`<div class="card pop center"><div class="big">🎯</div><h2>${t}</h2><p>${m}</p><button class="btn" id="nx">✅ SAYA SUDAH MEMAHAMI</button></div>`;$('nx').onclick=complete}
+function complete(){
+ const n=S.stage;S.xp+=20;let b='';
+ if(BADGE[n]&&!S.badges.includes(BADGE[n])){S.badges.push(BADGE[n]);b=`<div class="badge">${ic('medal')} BADGE TERBUKA<br><b>${BADGE[n]}</b></div>`}
+ S.stage++;LS={ci:0,pi:-1};save();conf();sfx('win');chrome();
+ $('app').innerHTML=`<div class="card pop center">${ic('trophy','xl')}<h2>Hebat, ${nm()}!</h2><p>${n==1?'Kamu sudah menyelesaikan materi pertama.':'Kamu sudah menyelesaikan tahap '+NAMES[n]+'.'} +20 XP</p>${b}<button class="btn" onclick="go()">➡️ LANJUT KE TAHAP ${NAMES[n+1].toUpperCase()}</button></div>`;
+}
+
+/* ---------- kuis ---------- */
+function quiz(){
+ if(S.qi>=QUIZ.length){endQuiz();return}
+ const i=S.qi;
+ if(i==0&&!$('qi0')){/* intro tidak wajib */}
+ run(QUIZ[i],r=>{S.res.push({i:i+1,ok:true,tries:r.tries,wrong:r.wrong,ans:QUIZ[i].ans});S.qi++;save();if(S.qi>=QUIZ.length)endQuiz();else quiz()},`🏆 KUIS AKHIR • Soal ${i+1} dari ${QUIZ.length}`,i==QUIZ.length-1?'🎉 LIHAT HASIL':'➡️ LANJUT KE SOAL BERIKUTNYA');
+}
+function endQuiz(){
+ if(!S.end)S.end=Date.now();
+ const total=QUIZ.length,benar=S.res.filter(r=>r.ok).length;
+ const detail=S.res.map(r=>`Soal ${r.i}: ${r.ok?'Benar':'Salah'} — Percobaan ${r.tries}${r.wrong.length?' — Kesalahan langkah: '+r.wrong.map(k=>KN[k]).join(', '):''} — Jawaban benar: ${r.ans}`).join('\n');
+ S.result={nama:S.name,materi:MATERI,skor:Math.round(benar/total*100),benar,total,durasi:Math.floor((S.end-S.start)/1000),detail};
+ if(!S.badges.includes('JUARA KUIS'))S.badges.push('JUARA KUIS');
+ S.stage=7;save();conf();sfx('win');render();
+}
+
+/* ---------- hasil & pengiriman ---------- */
+function result(){
+ const d=S.result;if(!d){S.stage=6;save();return render()}
+ const sc=d.skor,c=sc>=90?['🌟','LUAR BIASA!','Kamu hebat sekali! Kamu paham cara membulatkan dan selalu jujur saat menimbang.']:sc>=80?['🎉','SANGAT BAIK!','Kerja bagus! Sedikit lagi sempurna. Terus semangat!']:sc>=70?['👍','BAIK!','Bagus! Kamu sudah paham sebagian besar. Ayo berlatih sedikit lagi.']:sc>=60?['💪','TERUS BERLATIH!','Ayo terus berlatih. Kesalahan adalah bagian dari belajar.']:['🌱','AYO BELAJAR LAGI!','Jangan menyerah! Yuk belajar lagi pelan-pelan, kamu pasti bisa.'];
+ const wk=[...new Set(S.res.flatMap(r=>r.wrong))].map(k=>KN[k]);
+ $('app').innerHTML=`<div class="card pop center">${ic('trophy','xl')}<h2>🎉 PEMBELAJARAN SELESAI! 🎉</h2><p><b>Hebat, ${nm()}!</b></p><h2>${c[1]}</h2><p>${c[2]}</p><div class="stat"><div>⭐ Skor<br>${d.skor}</div><div>✅ Benar<br>${d.benar}</div><div>❌ Salah<br>${d.total-d.benar}</div><div>📝 Total<br>${d.total}</div></div><p>⏱️ Durasi: ${fmt(d.durasi)} (${d.durasi} detik)</p><p>${ic('medal')} ${S.badges.join(' • ')}</p></div>
+ <div class="card pop"><h2>📚 Yang sudah kamu kuasai:</h2><p>✓ Membulatkan bilangan ke bawah<br>✓ Membulatkan bilangan ke atas<br>✓ Membulatkan panjang<br>✓ Membulatkan berat<br>✓ Memahami pentingnya kejujuran</p>${wk.length?`<h2>💡 Yang perlu dipelajari lagi:</h2><p>${wk.map(x=>'• '+x.charAt(0).toUpperCase()+x.slice(1)).join('<br>')}</p>`:'<p>🌟 Kamu tidak salah langkah sama sekali!</p>'}</div>
+ <div class="card"><div id="sm" class="fb good">⏳ Menyiapkan rekap...</div><button class="btn alt" id="rs" style="display:none">📤 KIRIM ULANG REKAP</button><button class="btn ghost" id="rp">🔄 ULANGI PEMBELAJARAN</button></div>`;
+ $('rs').onclick=send;$('rp').onclick=confirmReset;
+ if(S.sent)smsg('✅ Rekap berhasil dikirim.');else send();
+}
+function smsg(t,bad){const e=$('sm');if(!e)return;e.className='fb '+(bad?'bad':'good');e.innerHTML=t;if($('rs'))$('rs').style.display=bad?'':'none'}
+async function send(){
+ const d=S.result;if(!d||S.sent||sending)return;sending=true;smsg('⏳ Mengirim rekap...');
+ try{
+  const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(d),redirect:'follow'});
+  if(!r.ok)throw new Error('http');
+  S.sent=true;save();try{localStorage.removeItem(PEND)}catch(e){}
+  smsg('✅ Rekap berhasil dikirim.');
+ }catch(e){
+  try{localStorage.setItem(PEND,JSON.stringify(d))}catch(x){}
+  smsg('📌 Hasil belajarmu sudah tersimpan di perangkat.<br>Coba kirim kembali saat koneksi internet tersedia.',1);
+ }
+ sending=false;
+}
+async function retryPending(){
+ let d;try{d=JSON.parse(localStorage.getItem(PEND)||'null')}catch(e){}
+ if(!d||(S.stage==7&&S.result&&!S.sent))return;
+ try{const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(d),redirect:'follow'});if(r.ok){localStorage.removeItem(PEND);toast('✅ Rekap berhasil dikirim.')}}catch(e){}
+}
+function confirmReset(){
+ const m=document.createElement('div');m.className='modal';
+ m.innerHTML='<div class="card pop"><div class="big">🤔</div><h2>Apakah kamu yakin ingin memulai kembali?</h2><button class="btn alt" id="y">Ya, Mulai Lagi</button><button class="btn ghost" id="n">Batalkan</button></div>';
+ document.body.appendChild(m);
+ $('n').onclick=()=>m.remove();
+ $('y').onclick=()=>{m.remove();S=fresh(S.name);LS={ci:0,pi:-1};save();render()};
+}
+
+/* ---------- mulai ---------- */
+if(S.stage>0&&!S.start){S=fresh(S.name)}
+render();updateMu();
+if(S.stage!=7)retryPending();
+</script>
+</body>
+</html>
